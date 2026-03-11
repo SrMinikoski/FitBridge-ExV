@@ -28,6 +28,8 @@ public class AlunoController {
     @PostMapping
     public Aluno create(@RequestBody Aluno aluno) { return repo.save(aluno); }
 
+    @PostMapping("/bulk")
+    public List<Aluno> createBulk(@RequestBody List<Aluno> alunos) { return repo.saveAll(alunos); }
 
     @PutMapping("/{id}")
     public ResponseEntity<Aluno> update(@PathVariable Long id, @RequestBody Aluno aluno) {

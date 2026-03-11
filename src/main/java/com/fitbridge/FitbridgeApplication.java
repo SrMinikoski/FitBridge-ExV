@@ -28,12 +28,13 @@ public class FitbridgeApplication {
         return args -> {
             Exercicio e1 = new Exercicio("Supino reto","Peito",3,10);
             Exercicio e2 = new Exercicio("Agachamento","Pernas",4,12);
-            exRepo.saveAll(List.of(e1,e2));
-
+            List<Exercicio> savedEx = exRepo.saveAll(List.of(e1,e2));
+            // reassign managed instances
+            e1 = savedEx.get(0);
+            e2 = savedEx.get(1);
 
             Instrutor instr = new Instrutor("Marcos","M",35, "12345","marcos@fit.com","senha123");
             instrRepo.save(instr);
-
 
             Treino t1 = new Treino("Treino A","Peito/Tríceps","Treino para hipertrofia");
             t1.setInstrutor(instr);

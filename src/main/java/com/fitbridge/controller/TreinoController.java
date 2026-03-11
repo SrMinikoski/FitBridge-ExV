@@ -42,6 +42,21 @@ public class TreinoController {
         return ResponseEntity.ok(saved);
     }
 
+    @PostMapping("/bulk")
+    public List<Treino> createBulk(@RequestBody List<Treino> treinos) {
+        for (Treino t : treinos) {
+            // persist or merge exercises first so they are managed before linking
+            if (t.getExercicios() != null && !t.getExercicios().isEmpty()) {
+                List<Exercicio> saved = exRepo.saveAll(t.getExercicios());
+                t.setExercicios(new HashSet<>(saved));
+            }
+            if (t.getInstrutor()!=null && t.getInstrutor().getId()!=null) {
+                instrRepo.findById(t.getInstrutor().getId()).ifPresent(t::setInstrutor);
+            }
+        }
+        return treinoRepo.saveAll(treinos);
+    }
+
 
     @PostMapping("/{id}/exercicios/{exId}")
     public ResponseEntity<Treino> addExercicio(@PathVariable Long id, @PathVariable Long exId) {

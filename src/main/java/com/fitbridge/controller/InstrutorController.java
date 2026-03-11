@@ -28,6 +28,8 @@ public class InstrutorController {
     @PostMapping
     public Instrutor create(@RequestBody Instrutor instr) { return repo.save(instr); }
 
+    @PostMapping("/bulk")
+    public List<Instrutor> createBulk(@RequestBody List<Instrutor> instrutores) { return repo.saveAll(instrutores); }
 
     @PutMapping("/{id}")
     public ResponseEntity<Instrutor> update(@PathVariable Long id, @RequestBody Instrutor instr) {
