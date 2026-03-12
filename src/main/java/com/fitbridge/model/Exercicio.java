@@ -13,18 +13,12 @@ public class Exercicio {
 
     private String descricao;
     private String musculoAlvo;
-    private Integer series;
-    private Integer repeticoes;
-
 
     public Exercicio() {}
 
-
-    public Exercicio(String descricao, String musculoAlvo, Integer series, Integer repeticoes) {
+    public Exercicio(String descricao, String musculoAlvo) {
         this.descricao = descricao;
         this.musculoAlvo = musculoAlvo;
-        this.series = series;
-        this.repeticoes = repeticoes;
     }
 
 
@@ -35,8 +29,4 @@ public class Exercicio {
     public void setDescricao(String descricao) { this.descricao = descricao; }
     public String getMusculoAlvo() { return musculoAlvo; }
     public void setMusculoAlvo(String musculoAlvo) { this.musculoAlvo = musculoAlvo; }
-    public Integer getSeries() { return series; }
-    public void setSeries(Integer series) { this.series = series; }
-    public Integer getRepeticoes() { return repeticoes; }
-    public void setRepeticoes(Integer repeticoes) { this.repeticoes = repeticoes; }
 }

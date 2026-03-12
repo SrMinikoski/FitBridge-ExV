@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fitbridge.model.TreinoExercicio;
+
 @Entity
 public class Treino {
     @Id
@@ -19,11 +21,8 @@ public class Treino {
     private String descricao;
 
 
-    @ManyToMany
-    @JoinTable(name = "treino_exercicio",
-            joinColumns = @JoinColumn(name = "treino_id"),
-            inverseJoinColumns = @JoinColumn(name = "exercicio_id"))
-    private Set<Exercicio> exercicios = new HashSet<>();
+    @OneToMany(mappedBy = "treino", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TreinoExercicio> itens = new HashSet<>();
 
 
     @ManyToOne
@@ -50,8 +49,8 @@ public class Treino {
     public void setGrupoMuscular(String grupoMuscular) { this.grupoMuscular = grupoMuscular; }
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
-    public Set<Exercicio> getExercicios() { return exercicios; }
-    public void setExercicios(Set<Exercicio> exercicios) { this.exercicios = exercicios; }
+    public Set<TreinoExercicio> getItens() { return itens; }
+    public void setItens(Set<TreinoExercicio> itens) { this.itens = itens; }
     public Instrutor getInstrutor() { return instrutor; }
     public void setInstrutor(Instrutor instrutor) { this.instrutor = instrutor; }
 }

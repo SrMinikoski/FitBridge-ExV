@@ -36,8 +36,6 @@ public class ExercicioController {
         return repo.findById(id).map(e -> {
             e.setDescricao(ex.getDescricao());
             e.setMusculoAlvo(ex.getMusculoAlvo());
-            e.setSeries(ex.getSeries());
-            e.setRepeticoes(ex.getRepeticoes());
             repo.save(e);
             return ResponseEntity.ok(e);
         }).orElse(ResponseEntity.notFound().build());

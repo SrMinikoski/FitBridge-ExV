@@ -17,7 +17,6 @@ public class TreinoController {
     private final ExercicioRepository exRepo;
     private final InstrutorRepository instrRepo;
 
-
     public TreinoController(TreinoRepository treinoRepo, ExercicioRepository exRepo, InstrutorRepository instrRepo) {
         this.treinoRepo = treinoRepo; this.exRepo = exRepo; this.instrRepo = instrRepo;
     }
@@ -35,8 +34,18 @@ public class TreinoController {
 
     @PostMapping
     public ResponseEntity<Treino> create(@RequestBody Treino treino) {
+        // resolve instrutor reference
         if (treino.getInstrutor()!=null && treino.getInstrutor().getId()!=null) {
             instrRepo.findById(treino.getInstrutor().getId()).ifPresent(treino::setInstrutor);
+        }
+        // prepare itens (join entities)
+        if (treino.getItens() != null) {
+            for (TreinoExercicio te : treino.getItens()) {
+                if (te.getExercicio() != null && te.getExercicio().getId() != null) {
+                    exRepo.findById(te.getExercicio().getId()).ifPresent(te::setExercicio);
+                }
+                te.setTreino(treino);
+            }
         }
         Treino saved = treinoRepo.save(treino);
         return ResponseEntity.ok(saved);
@@ -45,10 +54,13 @@ public class TreinoController {
     @PostMapping("/bulk")
     public List<Treino> createBulk(@RequestBody List<Treino> treinos) {
         for (Treino t : treinos) {
-            // persist or merge exercises first so they are managed before linking
-            if (t.getExercicios() != null && !t.getExercicios().isEmpty()) {
-                List<Exercicio> saved = exRepo.saveAll(t.getExercicios());
-                t.setExercicios(new HashSet<>(saved));
+            if (t.getItens() != null && !t.getItens().isEmpty()) {
+                for (TreinoExercicio te : t.getItens()) {
+                    if (te.getExercicio() != null && te.getExercicio().getId() != null) {
+                        exRepo.findById(te.getExercicio().getId()).ifPresent(te::setExercicio);
+                    }
+                    te.setTreino(t);
+                }
             }
             if (t.getInstrutor()!=null && t.getInstrutor().getId()!=null) {
                 instrRepo.findById(t.getInstrutor().getId()).ifPresent(t::setInstrutor);
@@ -58,15 +70,22 @@ public class TreinoController {
     }
 
 
-    @PostMapping("/{id}/exercicios/{exId}")
-    public ResponseEntity<Treino> addExercicio(@PathVariable Long id, @PathVariable Long exId) {
+    @PostMapping("/{id}/exercicios")
+    public ResponseEntity<Treino> addExercicio(@PathVariable Long id, @RequestBody TreinoExercicio teReq) {
         Optional<Treino> ot = treinoRepo.findById(id);
-        Optional<Exercicio> oe = exRepo.findById(exId);
-        if (ot.isPresent() && oe.isPresent()) {
-            Treino t = ot.get();
-            t.getExercicios().add(oe.get());
-            treinoRepo.save(t);
-            return ResponseEntity.ok(t);
+        if (ot.isPresent() && teReq.getExercicio()!=null && teReq.getExercicio().getId()!=null) {
+            Optional<Exercicio> oe = exRepo.findById(teReq.getExercicio().getId());
+            if (oe.isPresent()) {
+                Treino t = ot.get();
+                TreinoExercicio te = new TreinoExercicio();
+                te.setTreino(t);
+                te.setExercicio(oe.get());
+                te.setSeries(teReq.getSeries());
+                te.setRepeticoes(teReq.getRepeticoes());
+                t.getItens().add(te);
+                treinoRepo.save(t);
+                return ResponseEntity.ok(t);
+            }
         }
         return ResponseEntity.notFound().build();
     }
@@ -77,7 +96,7 @@ public class TreinoController {
         Optional<Treino> ot = treinoRepo.findById(id);
         if (ot.isPresent()) {
             Treino t = ot.get();
-            t.getExercicios().removeIf(e -> e.getId().equals(exId));
+            t.getItens().removeIf(te -> te.getExercicio()!=null && te.getExercicio().getId().equals(exId));
             treinoRepo.save(t);
             return ResponseEntity.ok(t);
         }
