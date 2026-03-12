@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fitbridge.model.TreinoExercicio;
-
 @Entity
 public class Treino {
     @Id
