@@ -1,0 +1,135 @@
+### Criar Aluno de Teste
+POST http://localhost:8080/api/alunos
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "sexo": "M",
+  "idade": 25,
+  "altura": 1.75,
+  "peso": 70.5,
+  "objetivo": "Ganho de massa muscular",
+  "email": "joao.silva@email.com",
+  "senha": "123456"
+}
+
+### Criar Instrutor de Teste
+POST http://localhost:8080/api/instrutores
+Content-Type: application/json
+
+{
+  "nome": "Maria Santos",
+  "sexo": "F",
+  "idade": 35,
+  "crefDiploma": "CREF-12345",
+  "email": "maria.santos@email.com",
+  "senha": "123456"
+}
+
+### Criar Exercício 1
+POST http://localhost:8080/api/exercicios
+Content-Type: application/json
+
+{
+  "descricao": "Supino Reto com Barra",
+  "musculoAlvo": "Peitoral"
+}
+
+### Criar Exercício 2
+POST http://localhost:8080/api/exercicios
+Content-Type: application/json
+
+{
+  "descricao": "Agachamento Livre",
+  "musculoAlvo": "Quadríceps"
+}
+
+### Criar Treino de Teste
+POST http://localhost:8080/api/treinos
+Content-Type: application/json
+
+{
+  "titulo": "Treino Superior Completo",
+  "grupoMuscular": "Peito e Pernas",
+  "descricao": "Treino focado no desenvolvimento do peitoral e quadríceps",
+  "instrutorId": 1,
+  "itens": [
+    {
+      "exercicioId": 1,
+      "series": 4,
+      "repeticoes": 8
+    },
+    {
+      "exercicioId": 2,
+      "series": 3,
+      "repeticoes": 10
+    }
+  ]
+}
+
+### ⭐ CRIAR FAVORITO (Teste Principal)
+POST http://localhost:8080/api/favoritos?alunoId=1&treinoId=1
+Content-Type: application/json
+
+### LISTAR FAVORITOS DO ALUNO
+GET http://localhost:8080/api/favoritos/aluno/1
+Content-Type: application/json
+
+### OBTER FAVORITO ESPECÍFICO
+GET http://localhost:8080/api/favoritos/1
+Content-Type: application/json
+
+### ✏️ EDITAR DADOS DO TREINO FAVORITO
+PUT http://localhost:8080/api/favoritos/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "titulo": "Treino Superior Completo - MODIFICADO",
+  "grupoMuscular": "Peito e Pernas",
+  "descricao": "Treino personalizado com ajustes nas séries",
+  "itens": [
+    {
+      "id": 1,
+      "exercicioId": 1,
+      "descricao": "Supino Reto com Barra",
+      "musculoAlvo": "Peitoral",
+      "series": 5,
+      "repeticoes": 6
+    },
+    {
+      "id": 2,
+      "exercicioId": 2,
+      "descricao": "Agachamento Livre",
+      "musculoAlvo": "Quadríceps",
+      "series": 4,
+      "repeticoes": 8
+    }
+  ]
+}
+
+### VERIFICAR EDIÇÃO
+GET http://localhost:8080/api/favoritos/1
+Content-Type: application/json
+
+### REMOVER FAVORITO
+DELETE http://localhost:8080/api/favoritos/1
+Content-Type: application/json
+
+### 🧪 TESTES DE ERRO
+
+### Tentar favoritar treino inexistente
+POST http://localhost:8080/api/favoritos?alunoId=1&treinoId=999
+Content-Type: application/json
+
+### Tentar editar favorito inexistente
+PUT http://localhost:8080/api/favoritos/999
+Content-Type: application/json
+
+{
+  "id": 1,
+  "titulo": "Treino Teste",
+  "grupoMuscular": "Teste",
+  "descricao": "Teste",
+  "itens": []
+}

@@ -22,6 +22,14 @@ public class Favorito {
     @ManyToOne
     private Treino treino;
 
+    /**
+     * Armazena uma cópia dos dados do treino em formato JSON.
+     * Permite que o usuário edite o treino localmente sem afetar o treino original.
+     * Este campo é preenchido quando o treino é adicionado aos favoritos.
+     */
+    @Column(columnDefinition = "TEXT")
+    private String treinoDados;
+
 
     public Favorito() {}
 
@@ -41,4 +49,6 @@ public class Favorito {
     public void setAluno(Aluno aluno) { this.aluno = aluno; }
     public Treino getTreino() { return treino; }
     public void setTreino(Treino treino) { this.treino = treino; }
+    public String getTreinoDados() { return treinoDados; }
+    public void setTreinoDados(String treinoDados) { this.treinoDados = treinoDados; }
 }
