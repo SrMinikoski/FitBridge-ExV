@@ -4,9 +4,12 @@ package com.fitbridge.controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.*;
+import java.util.ArrayList;
 
 
 import com.fitbridge.model.*;
+import com.fitbridge.dto.TreinoDTO;
+import com.fitbridge.dto.TreinoExercicioDTO;
 import com.fitbridge.repository.*;
 
 
@@ -33,38 +36,66 @@ public class TreinoController {
 
 
     @PostMapping
-    public ResponseEntity<Treino> create(@RequestBody Treino treino) {
+    public ResponseEntity<Treino> create(@RequestBody TreinoDTO dto) {
+        Treino treino = new Treino();
+        treino.setTitulo(dto.getTitulo());
+        treino.setGrupoMuscular(dto.getGrupoMuscular());
+        treino.setDescricao(dto.getDescricao());
+
         // resolve instrutor reference
-        if (treino.getInstrutor()!=null && treino.getInstrutor().getId()!=null) {
-            instrRepo.findById(treino.getInstrutor().getId()).ifPresent(treino::setInstrutor);
+        if (dto.getInstrutorId() != null) {
+            instrRepo.findById(dto.getInstrutorId()).ifPresent(treino::setInstrutor);
         }
-        // prepare itens (join entities)
-        if (treino.getItens() != null) {
-            for (TreinoExercicio te : treino.getItens()) {
-                if (te.getExercicio() != null && te.getExercicio().getId() != null) {
-                    exRepo.findById(te.getExercicio().getId()).ifPresent(te::setExercicio);
+
+        // prepare itens from DTO exercise IDs
+        if (dto.getItens() != null) {
+            for (TreinoExercicioDTO itemDTO : dto.getItens()) {
+                if (itemDTO.getExercicioId() != null) {
+                    Optional<Exercicio> oe = exRepo.findById(itemDTO.getExercicioId());
+                    if (oe.isPresent()) {
+                        TreinoExercicio te = new TreinoExercicio();
+                        te.setTreino(treino);
+                        te.setExercicio(oe.get());
+                        te.setSeries(itemDTO.getSeries());
+                        te.setRepeticoes(itemDTO.getRepeticoes());
+                        treino.getItens().add(te);
+                    }
                 }
-                te.setTreino(treino);
             }
         }
+
         Treino saved = treinoRepo.save(treino);
         return ResponseEntity.ok(saved);
     }
 
     @PostMapping("/bulk")
-    public List<Treino> createBulk(@RequestBody List<Treino> treinos) {
-        for (Treino t : treinos) {
-            if (t.getItens() != null && !t.getItens().isEmpty()) {
-                for (TreinoExercicio te : t.getItens()) {
-                    if (te.getExercicio() != null && te.getExercicio().getId() != null) {
-                        exRepo.findById(te.getExercicio().getId()).ifPresent(te::setExercicio);
+    public List<Treino> createBulk(@RequestBody List<TreinoDTO> dtos) {
+        List<Treino> treinos = new ArrayList<>();
+        for (TreinoDTO dto : dtos) {
+            Treino t = new Treino();
+            t.setTitulo(dto.getTitulo());
+            t.setGrupoMuscular(dto.getGrupoMuscular());
+            t.setDescricao(dto.getDescricao());
+
+            if (dto.getInstrutorId() != null) {
+                instrRepo.findById(dto.getInstrutorId()).ifPresent(t::setInstrutor);
+            }
+
+            if (dto.getItens() != null) {
+                for (TreinoExercicioDTO itemDTO : dto.getItens()) {
+                    if (itemDTO.getExercicioId() != null) {
+                        exRepo.findById(itemDTO.getExercicioId()).ifPresent(ex -> {
+                            TreinoExercicio te = new TreinoExercicio();
+                            te.setTreino(t);
+                            te.setExercicio(ex);
+                            te.setSeries(itemDTO.getSeries());
+                            te.setRepeticoes(itemDTO.getRepeticoes());
+                            t.getItens().add(te);
+                        });
                     }
-                    te.setTreino(t);
                 }
             }
-            if (t.getInstrutor()!=null && t.getInstrutor().getId()!=null) {
-                instrRepo.findById(t.getInstrutor().getId()).ifPresent(t::setInstrutor);
-            }
+            treinos.add(t);
         }
         return treinoRepo.saveAll(treinos);
     }

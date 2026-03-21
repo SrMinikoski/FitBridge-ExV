@@ -5,20 +5,26 @@ package com.fitbridge.dto;
  * Inclui informações completas do exercício para visualização e edição offline.
  */
 public class SavedTreinoExercicioDTO {
-    private Long id;  // ID do TreinoExercicio (para referência na edição)
-    private Long exercicioId;  // ID do Exercicio original
-    private String descricao;  // Descrição do exercício
-    private String musculoAlvo;  // Músculo alvo do exercício
-    private Integer series;  // Número de séries (editável)
-    private Integer repeticoes;  // Número de repetições (editável)
+    private Long id;
+    private Long exercicioId;
+    private String nome;
+    private String descricao;
+    private String musculoAlvo;
+    private String musculosAuxiliares;
+    private String diretorioImagem;
+    private Integer series;
+    private Integer repeticoes;
 
     public SavedTreinoExercicioDTO() {}
 
-    public SavedTreinoExercicioDTO(Long id, Long exercicioId, String descricao, String musculoAlvo, Integer series, Integer repeticoes) {
+    public SavedTreinoExercicioDTO(Long id, Long exercicioId, String nome, String descricao, String musculoAlvo, String musculosAuxiliares, String diretorioImagem, Integer series, Integer repeticoes) {
         this.id = id;
         this.exercicioId = exercicioId;
+        this.nome = nome;
         this.descricao = descricao;
         this.musculoAlvo = musculoAlvo;
+        this.musculosAuxiliares = musculosAuxiliares;
+        this.diretorioImagem = diretorioImagem;
         this.series = series;
         this.repeticoes = repeticoes;
     }
@@ -54,6 +60,30 @@ public class SavedTreinoExercicioDTO {
 
     public void setMusculoAlvo(String musculoAlvo) {
         this.musculoAlvo = musculoAlvo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getMusculosAuxiliares() {
+        return musculosAuxiliares;
+    }
+
+    public void setMusculosAuxiliares(String musculosAuxiliares) {
+        this.musculosAuxiliares = musculosAuxiliares;
+    }
+
+    public String getDiretorioImagem() {
+        return diretorioImagem;
+    }
+
+    public void setDiretorioImagem(String diretorioImagem) {
+        this.diretorioImagem = diretorioImagem;
     }
 
     public Integer getSeries() {

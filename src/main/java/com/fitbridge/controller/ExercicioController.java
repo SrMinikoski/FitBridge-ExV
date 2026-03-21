@@ -34,8 +34,11 @@ public class ExercicioController {
     @PutMapping("/{id}")
     public ResponseEntity<Exercicio> update(@PathVariable Long id, @RequestBody Exercicio ex) {
         return repo.findById(id).map(e -> {
+            e.setNome(ex.getNome());
             e.setDescricao(ex.getDescricao());
             e.setMusculoAlvo(ex.getMusculoAlvo());
+            e.setMusculosAuxiliares(ex.getMusculosAuxiliares());
+            e.setDiretorioImagem(ex.getDiretorioImagem());
             repo.save(e);
             return ResponseEntity.ok(e);
         }).orElse(ResponseEntity.notFound().build());

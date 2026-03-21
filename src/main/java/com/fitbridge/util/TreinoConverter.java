@@ -31,8 +31,11 @@ public class TreinoConverter {
                 SavedTreinoExercicioDTO exercicioDTO = new SavedTreinoExercicioDTO(
                     item.getId(),
                     item.getExercicio().getId(),
+                    item.getExercicio().getNome(),
                     item.getExercicio().getDescricao(),
                     item.getExercicio().getMusculoAlvo(),
+                    item.getExercicio().getMusculosAuxiliares(),
+                    item.getExercicio().getDiretorioImagem(),
                     item.getSeries(),
                     item.getRepeticoes()
                 );
