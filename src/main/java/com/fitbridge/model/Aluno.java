@@ -1,5 +1,6 @@
 package com.fitbridge.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class Aluno {
 
 
     @OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Favorito> favoritos = new ArrayList<>();
 
 

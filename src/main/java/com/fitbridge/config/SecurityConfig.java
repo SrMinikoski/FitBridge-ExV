@@ -1,23 +1,17 @@
 package com.fitbridge.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // Desabilita proteção CSRF
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()  // Libera TODOS os endpoints
-                )
-                .httpBasic(httpBasic -> httpBasic.disable()) // Remove login Basic
-                .formLogin(formLogin -> formLogin.disable()); // Remove tela de login
-
-        return http.build();
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                .allowedHeaders("*");
     }
 }

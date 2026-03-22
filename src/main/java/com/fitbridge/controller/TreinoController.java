@@ -4,13 +4,12 @@ package com.fitbridge.controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import java.util.*;
-import java.util.ArrayList;
-
 
 import com.fitbridge.model.*;
 import com.fitbridge.dto.TreinoDTO;
 import com.fitbridge.dto.TreinoExercicioDTO;
 import com.fitbridge.repository.*;
+import com.fitbridge.util.AuthValidationUtil;
 
 
 @RestController
@@ -36,7 +35,20 @@ public class TreinoController {
 
 
     @PostMapping
-    public ResponseEntity<Treino> create(@RequestBody TreinoDTO dto) {
+    public ResponseEntity<?> create(
+            @RequestBody TreinoDTO dto,
+            @RequestHeader(value = "X-User-ID", required = false) String userId,
+            @RequestHeader(value = "X-User-Type", required = false) String userType) {
+        
+        // Validar autenticação
+        ResponseEntity<?> authError = AuthValidationUtil.validateUserAuth(userId, userType);
+        if (authError != null) return authError;
+        
+        // Apenas instrutores podem criar treinos
+        if (!"INSTRUTOR".equals(userType)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Apenas instrutores podem criar treinos."));
+        }
+        
         Treino treino = new Treino();
         treino.setTitulo(dto.getTitulo());
         treino.setGrupoMuscular(dto.getGrupoMuscular());
@@ -69,7 +81,20 @@ public class TreinoController {
     }
 
     @PostMapping("/bulk")
-    public List<Treino> createBulk(@RequestBody List<TreinoDTO> dtos) {
+    public ResponseEntity<?> createBulk(
+            @RequestBody List<TreinoDTO> dtos,
+            @RequestHeader(value = "X-User-ID", required = false) String userId,
+            @RequestHeader(value = "X-User-Type", required = false) String userType) {
+        
+        // Validar autenticação
+        ResponseEntity<?> authError = AuthValidationUtil.validateUserAuth(userId, userType);
+        if (authError != null) return authError;
+        
+        // Apenas instrutores podem criar treinos
+        if (!"INSTRUTOR".equals(userType)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Apenas instrutores podem criar treinos em bulk."));
+        }
+        
         List<Treino> treinos = new ArrayList<>();
         for (TreinoDTO dto : dtos) {
             Treino t = new Treino();
@@ -97,12 +122,26 @@ public class TreinoController {
             }
             treinos.add(t);
         }
-        return treinoRepo.saveAll(treinos);
+        return ResponseEntity.ok(treinoRepo.saveAll(treinos));
     }
 
 
     @PostMapping("/{id}/exercicios")
-    public ResponseEntity<Treino> addExercicio(@PathVariable Long id, @RequestBody TreinoExercicio teReq) {
+    public ResponseEntity<?> addExercicio(
+            @PathVariable Long id,
+            @RequestBody TreinoExercicio teReq,
+            @RequestHeader(value = "X-User-ID", required = false) String userId,
+            @RequestHeader(value = "X-User-Type", required = false) String userType) {
+        
+        // Validar autenticação
+        ResponseEntity<?> authError = AuthValidationUtil.validateUserAuth(userId, userType);
+        if (authError != null) return authError;
+        
+        // Apenas instrutores podem adicionar exercícios
+        if (!"INSTRUTOR".equals(userType)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Apenas instrutores podem adicionar exercícios."));
+        }
+        
         Optional<Treino> ot = treinoRepo.findById(id);
         if (ot.isPresent() && teReq.getExercicio()!=null && teReq.getExercicio().getId()!=null) {
             Optional<Exercicio> oe = exRepo.findById(teReq.getExercicio().getId());
@@ -123,7 +162,21 @@ public class TreinoController {
 
 
     @DeleteMapping("/{id}/exercicios/{exId}")
-    public ResponseEntity<Treino> removeExercicio(@PathVariable Long id, @PathVariable Long exId) {
+    public ResponseEntity<?> removeExercicio(
+            @PathVariable Long id,
+            @PathVariable Long exId,
+            @RequestHeader(value = "X-User-ID", required = false) String userId,
+            @RequestHeader(value = "X-User-Type", required = false) String userType) {
+        
+        // Validar autenticação
+        ResponseEntity<?> authError = AuthValidationUtil.validateUserAuth(userId, userType);
+        if (authError != null) return authError;
+        
+        // Apenas instrutores
+        if (!"INSTRUTOR".equals(userType)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Apenas instrutores podem remover exercícios."));
+        }
+        
         Optional<Treino> ot = treinoRepo.findById(id);
         if (ot.isPresent()) {
             Treino t = ot.get();
@@ -136,8 +189,24 @@ public class TreinoController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (treinoRepo.existsById(id)) { treinoRepo.deleteById(id); return ResponseEntity.noContent().build(); }
+    public ResponseEntity<?> delete(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-User-ID", required = false) String userId,
+            @RequestHeader(value = "X-User-Type", required = false) String userType) {
+        
+        // Validar autenticação
+        ResponseEntity<?> authError = AuthValidationUtil.validateUserAuth(userId, userType);
+        if (authError != null) return authError;
+        
+        // Apenas instrutores
+        if (!"INSTRUTOR".equals(userType)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Apenas instrutores podem deletar treinos."));
+        }
+        
+        if (treinoRepo.existsById(id)) { 
+            treinoRepo.deleteById(id); 
+            return ResponseEntity.noContent().build(); 
+        }
         return ResponseEntity.notFound().build();
     }
 }
