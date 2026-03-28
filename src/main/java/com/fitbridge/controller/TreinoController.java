@@ -3,6 +3,7 @@ package com.fitbridge.controller;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import java.text.Normalizer;
 import java.util.*;
 
 import com.fitbridge.model.*;
@@ -26,6 +27,39 @@ public class TreinoController {
 
     @GetMapping
     public List<Treino> all() { return treinoRepo.findAll(); }
+
+
+    // Função 3: listar todos os treinos criados por determinado instrutor
+    @GetMapping("/instrutor/{instrutorId}")
+    public ResponseEntity<List<Treino>> byInstrutor(@PathVariable Long instrutorId) {
+        List<Treino> treinos = treinoRepo.findByInstrutorId(instrutorId);
+        return ResponseEntity.ok(treinos);
+    }
+
+
+    // Normaliza string: remove acentos e converte para minúsculas
+    private String normalizar(String s) {
+        if (s == null) return "";
+        return Normalizer.normalize(s, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}", "")
+                .toLowerCase();
+    }
+
+    // Função 4: pesquisar treinos por título e/ou músculo alvo (case e accent insensitive)
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscar(@RequestParam String q) {
+        if (q == null || q.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Parâmetro de busca 'q' não pode ser vazio."));
+        }
+        // Normaliza o termo buscado: remove acentos e converte pra minúsculo
+        String termo = normalizar(q.trim());
+        // Filtra em Java — não depende de colunas extras no banco
+        List<Treino> resultado = treinoRepo.findAll().stream()
+                .filter(t -> normalizar(t.getTitulo()).contains(termo)
+                          || normalizar(t.getGrupoMuscular()).contains(termo))
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(resultado);
+    }
 
 
     @GetMapping("/{id}")
