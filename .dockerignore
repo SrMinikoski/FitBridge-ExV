@@ -1,0 +1,28 @@
+# Maven build output – rebuilt inside the container
+target/
+
+# IDE metadata
+.idea/
+*.iml
+.vscode/
+*.classpath
+*.project
+.settings/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Test and documentation artifacts
+*.md
+*.bat
+*.sh
+*.http
+
+# Avoid accidentally including local env overrides
+.env
+.env.*

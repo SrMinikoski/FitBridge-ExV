@@ -1,0 +1,40 @@
+services:
+
+  # ─── PostgreSQL ─────────────────────────────────────────────────────────────
+  fitbridge-db:
+    image: postgres:15-alpine
+    container_name: fitbridge-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fitbridge_db
+      POSTGRES_USER: fitbridge_db_user
+      POSTGRES_PASSWORD: fitbridge_db_pass
+    volumes:
+      - fitbridge_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitbridge_db_user -d fitbridge_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Spring Boot Application ────────────────────────────────────────────────
+  fitbridge-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fitbridge-app
+    restart: unless-stopped
+    depends_on:
+      fitbridge-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://fitbridge-db:5432/fitbridge_db
+      SPRING_DATASOURCE_USERNAME: fitbridge_db_user
+      SPRING_DATASOURCE_PASSWORD: fitbridge_db_pass
+    ports:
+      - "8080:8080"
+
+volumes:
+  fitbridge_data:
