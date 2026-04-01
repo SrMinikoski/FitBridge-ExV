@@ -87,6 +87,7 @@ public class TreinoController {
         treino.setTitulo(dto.getTitulo());
         treino.setGrupoMuscular(dto.getGrupoMuscular());
         treino.setDescricao(dto.getDescricao());
+        treino.setDiretorioImagem(dto.getDiretorioImagem());
 
         // resolve instrutor reference
         if (dto.getInstrutorId() != null) {
@@ -135,6 +136,7 @@ public class TreinoController {
             t.setTitulo(dto.getTitulo());
             t.setGrupoMuscular(dto.getGrupoMuscular());
             t.setDescricao(dto.getDescricao());
+            t.setDiretorioImagem(dto.getDiretorioImagem());
 
             if (dto.getInstrutorId() != null) {
                 instrRepo.findById(dto.getInstrutorId()).ifPresent(t::setInstrutor);

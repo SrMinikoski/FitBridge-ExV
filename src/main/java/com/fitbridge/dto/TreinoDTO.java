@@ -8,6 +8,7 @@ public class TreinoDTO {
     private String titulo;
     private String grupoMuscular;
     private String descricao;
+    private String diretorioImagem;
     private Set<TreinoExercicioDTO> itens;
     private Long instrutorId;
 
@@ -19,6 +20,8 @@ public class TreinoDTO {
     public void setGrupoMuscular(String grupoMuscular) { this.grupoMuscular = grupoMuscular; }
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
+    public String getDiretorioImagem() { return diretorioImagem; }
+    public void setDiretorioImagem(String diretorioImagem) { this.diretorioImagem = diretorioImagem; }
     public Set<TreinoExercicioDTO> getItens() { return itens; }
     public void setItens(Set<TreinoExercicioDTO> itens) { this.itens = itens; }
     public Long getInstrutorId() { return instrutorId; }

@@ -20,6 +20,7 @@ public class Treino {
     private String grupoMuscularNormalizado;
     @Column(length = 2000)
     private String descricao;
+    private String diretorioImagem;
 
 
     @OneToMany(mappedBy = "treino", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -62,4 +63,6 @@ public class Treino {
     public void setItens(Set<TreinoExercicio> itens) { this.itens = itens; }
     public Instrutor getInstrutor() { return instrutor; }
     public void setInstrutor(Instrutor instrutor) { this.instrutor = instrutor; }
+    public String getDiretorioImagem() { return diretorioImagem; }
+    public void setDiretorioImagem(String diretorioImagem) { this.diretorioImagem = diretorioImagem; }
 }
